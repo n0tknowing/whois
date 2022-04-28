@@ -6,16 +6,16 @@
  */
 
 #define _POSIX_C_SOURCE 200809L
+#include <arpa/inet.h>
 #include <ctype.h>
 #include <errno.h>
-#include <getopt.h>
+#include <netdb.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <arpa/inet.h>
-#include <sys/types.h>
 #include <sys/socket.h>
-#include <netdb.h>
+#include <sys/types.h>
+#include <unistd.h>
 
 static int check_port(const char *port)
 {
