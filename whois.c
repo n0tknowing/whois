@@ -46,7 +46,8 @@ int main(int argc, char **argv)
 	char recv_buf[25];
 	int r = 0, fd = -1;
 	int opt, verbose = 0;
-	const char *port = "43";
+	struct sockaddr_in *addr;
+	const char *port = "43", *ip;
 	ssize_t recv_r, recv_tot = 0;
 	const char *tld = NULL, *tld_tmp;
 	const char *server = "whois.iana.org";
@@ -119,13 +120,18 @@ int main(int argc, char **argv)
 		return 1;
 	}
 
+	addr = (struct sockaddr_in *)res->ai_addr;
+	ip = inet_ntoa(addr->sin_addr);
+
 	if (verbose) {
-		printf("=== Successfuly created socket descriptor (%d)\n", fd);
-		printf("=== Start connecting to %s, port %s\n", server, port);
+		printf("=== Successfuly created socket descriptor (fd=%d)\n", fd);
+		printf("=== Start connecting to %s (%s), port %s\n",
+				server, ip, port);
 	}
 
 	if ((r = connect(fd, res->ai_addr, res->ai_addrlen)) < 0) {
-		fprintf(stderr, "Failed to connecting to %s, port %s", server, port);
+		fprintf(stderr, "Failed to connecting to %s (%s), port %s",
+				server, ip, port);
 		perror(NULL);
 		return 1;
 	}
@@ -133,12 +139,13 @@ int main(int argc, char **argv)
 	freeaddrinfo(res);
 
 	if (verbose) {
-		printf("=== Successfuly connected to %s, port %s\n", server, port);
+		printf("=== Successfuly connected to %s (%s), port %s\n",
+				server, ip, port);
 		printf("=== Start sending command \"%s\\r\\n\"\n", tld);
 	}
 
 	if ((r = dprintf(fd, "%s\r\n", tld)) < 0) {
-		fprintf(stderr, "Failed to sending \"%s\\r\\n\"", tld);
+		fprintf(stderr, "Failed to sending command \"%s\\r\\n\"", tld);
 		if (errno)
 			perror(NULL);
 		else
@@ -160,5 +167,6 @@ int main(int argc, char **argv)
 	if (verbose)
 		printf("=== Received %lu bytes\n", recv_tot);
 
+	close(fd);
 	return 0;
 }
