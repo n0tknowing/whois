@@ -8,6 +8,7 @@
 #define _POSIX_C_SOURCE 200809L
 #include <arpa/inet.h>
 #include <ctype.h>
+#include <err.h>
 #include <errno.h>
 #include <netdb.h>
 #include <stdio.h>
@@ -110,6 +111,8 @@ int main(int argc, char **argv)
 		printf("=== Calling getaddrinfo\n");
 
 	if ((r = getaddrinfo(server, port, &hint, &res)) < 0) {
+		if (r == EAI_SYSTEM)
+			err(1, "%s", server);
 		fprintf(stderr, "%s: %s\n", server, gai_strerror(r));
 		return 1;
 	}
