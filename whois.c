@@ -43,6 +43,8 @@ static void usage(int exit_code)
 
 int main(int argc, char **argv)
 {
+	const char *prog = "whois";
+
 	char recv_buf[25];
 	int r = 0, fd = -1;
 	int opt, verbose = 0;
@@ -61,7 +63,7 @@ int main(int argc, char **argv)
 		case 'p':
 			port = optarg;
 			if (!check_port(port)) {
-				fprintf(stderr, "%s: invalid port %s\n", argv[0], port);
+				fprintf(stderr, "%s: invalid port %s\n", prog, port);
 				usage(1);
 			}
 			break;
@@ -77,13 +79,15 @@ int main(int argc, char **argv)
 		}
 	}
 
-	if (optind < argc)
-		tld = argv[optind];
+	argc -= optind;
+	argv += optind;
 
-	if (!tld) {
-		fprintf(stderr, "%s: TLD not specified\n", argv[0]);
+	if (argc == 0) {
+		fprintf(stderr, "%s: TLD not specified\n", prog);
 		usage(1);
 	}
+
+	tld = argv[0];
 
 	if ((tld_tmp = strstr(tld, "//"))) {
 		if (verbose)
