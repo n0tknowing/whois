@@ -34,6 +34,8 @@ static void usage(int exit_code)
 	fprintf(stderr, "  whois [-hv] [-p PORT] [-s SERV] TLD\n");
 	fprintf(stderr, "\n");
 	fprintf(stderr, "Options:\n");
+	fprintf(stderr, "  -4          Use IPv4 (default)\n");
+	fprintf(stderr, "  -6          Use IPv6\n");
 	fprintf(stderr, "  -h          Show help message\n");
 	fprintf(stderr, "  -p PORT     Use port PORT instead of 43\n");
 	fprintf(stderr, "  -s SERV     Use whois server SERV instead of whois.iana.org\n");
@@ -46,6 +48,7 @@ int main(int argc, char **argv)
 {
 	const char *prog = "whois";
 
+	int af = AF_INET;
 	char recv_buf[25];
 	int r = 0, fd = -1;
 	int opt, verbose = 0;
@@ -56,8 +59,13 @@ int main(int argc, char **argv)
 	const char *server = "whois.iana.org";
 	struct addrinfo hint = {0}, *res = NULL;
 
-	while ((opt = getopt(argc, argv, "hp:s:v")) != EOF) {
+	while ((opt = getopt(argc, argv, "46hp:s:v")) != EOF) {
 		switch (opt) {
+		case '4':
+			break;
+		case '6':
+			af = AF_INET6;
+			break;
 		case 'h':
 			usage(0);
 			break;
@@ -104,7 +112,7 @@ int main(int argc, char **argv)
 		printf("=== Querying %s\n", tld);
 	}
 
-	hint.ai_family = AF_INET;
+	hint.ai_family = af;
 	hint.ai_socktype = SOCK_STREAM;
 
 	if (verbose)
