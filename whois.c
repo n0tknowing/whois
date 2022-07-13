@@ -49,11 +49,11 @@ int main(int argc, char **argv)
 	const char *prog = "whois";
 
 	int af = AF_INET;
-	char recv_buf[25];
+	char recv_buf[25], ip[INET6_ADDRSTRLEN];
 	int r = 0, fd = -1;
 	int opt, verbose = 0;
-	struct sockaddr_in *addr;
-	const char *port = "43", *ip;
+	void *addr;
+	const char *port = "43";
 	ssize_t recv_r, recv_tot = 0;
 	const char *tld = NULL, *tld_tmp;
 	const char *server = "whois.iana.org";
@@ -135,8 +135,13 @@ int main(int argc, char **argv)
 		return 1;
 	}
 
-	addr = (struct sockaddr_in *)res->ai_addr;
-	ip = inet_ntoa(addr->sin_addr);
+	if (af == AF_INET)
+		addr = &((struct sockaddr_in *)res->ai_addr)->sin_addr;
+	else
+		addr = &((struct sockaddr_in6 *)res->ai_addr)->sin6_addr;
+
+	if (!inet_ntop(af, addr, ip, sizeof(ip)))
+		err(1, "inet_ntop");
 
 	if (verbose) {
 		printf("=== Successfuly created socket descriptor (fd=%d)\n", fd);
@@ -145,7 +150,7 @@ int main(int argc, char **argv)
 	}
 
 	if ((r = connect(fd, res->ai_addr, res->ai_addrlen)) < 0) {
-		fprintf(stderr, "Failed to connecting to %s (%s), port %s",
+		fprintf(stderr, "Failed to connecting to %s (%s), port %s: ",
 				server, ip, port);
 		perror(NULL);
 		return 1;
