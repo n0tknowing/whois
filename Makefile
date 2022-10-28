@@ -2,7 +2,7 @@ CC      = gcc
 CFLAGS  = -std=c99 -Wall -Wextra -Wstrict-prototypes -Wpedantic -O2
 SRC     = whois.c
 BIN     = whois
-RM      = rm -rf
+RM      = rm -f
 
 .default: whois
 
