@@ -7,7 +7,6 @@
 
 #define _POSIX_C_SOURCE 200809L
 #include <arpa/inet.h>
-#include <ctype.h>
 #include <err.h>
 #include <errno.h>
 #include <netdb.h>
@@ -18,14 +17,22 @@
 #include <sys/types.h>
 #include <unistd.h>
 
+/* completely ignore any non-ascii encoding */
+#define ISDIGIT(c) ((c) >= '0' && (c) <= '9')
+
 static int check_port(const char *port)
 {
 	const char *p = port;
+	int r = 0;
 
-	while (isdigit(*p))
+	while (ISDIGIT(*p)) {
+		r = r * 10;
+		r = r + *p - '0';
+		if (r >= 65536) break;
 		p++;
+	}
 
-	return *p == '\0';
+	return r > 0 && r < 65536;
 }
 
 static void usage(int exit_code)
