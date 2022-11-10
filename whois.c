@@ -7,7 +7,6 @@
 
 #define _POSIX_C_SOURCE 200809L
 #include <arpa/inet.h>
-#include <err.h>
 #include <errno.h>
 #include <netdb.h>
 #include <stdio.h>
