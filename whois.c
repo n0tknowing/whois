@@ -104,7 +104,7 @@ static void usage(int exit_code)
 	printf("  whois [-h] [-p PORT] [-s SERV] TLD\n");
 	printf("\n");
 	printf("Options:\n");
-	printf("  -4          Use IPv4 (default)\n");
+	printf("  -4          Use IPv4\n");
 	printf("  -6          Use IPv6\n");
 	printf("  -h          Show help message\n");
 	printf("  -p PORT     Use port PORT instead of 43\n");
@@ -116,7 +116,7 @@ int main(int argc, char **argv)
 {
 	const char *server = "whois.iana.org";
 	const char *port = "43";
-	int opt, af = AF_INET;
+	int opt, af = AF_UNSPEC;
 
 	while ((opt = getopt(argc, argv, ":46hp:s:")) != EOF) {
 		switch (opt) {

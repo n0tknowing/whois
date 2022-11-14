@@ -4,7 +4,7 @@ whois - simple whois command
     whois [-h] [-p PORT] [-s SERV] TLD
 
   Options:
-    -4          Use IPv4 (default)
+    -4          Use IPv4
     -6          Use IPv6
     -h          Show help message
     -p PORT     Use port PORT instead of 43
